@@ -8,14 +8,14 @@ import urllib2
 import opsecHeader
 
 
-def writeTweet(twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time, profile_image_url_https):
+def write_tweet(twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time, profile_image_url_https):
     sql = "INSERT INTO twitter (twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time, profile_image_url_https) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     opsecHeader.cur.execute(sql, (twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time, profile_image_url_https))
     opsecHeader.db.commit()
 
 
-def getLatestTweet(from_user=None, keyword=None):
-    twitter_id, epoch_time = '0', '0' # Default values
+def get_latest_tweet(from_user=None, keyword=None):
+    twitter_id, epoch_time = '0', '0'  # Default values
 
     if from_user is None and keyword is not None:
         sql = "SELECT twitter_id, epoch_time FROM `twitter` WHERE keyword = %s ORDER BY twitter_id desc LIMIT 1"
@@ -33,7 +33,7 @@ def getLatestTweet(from_user=None, keyword=None):
     return twitter_id, epoch_time
 
 
-def getUsers():
+def get_users():
     users = []
     sql = "SELECT user FROM twitter_users"
     opsecHeader.cur.execute(sql)
@@ -42,105 +42,105 @@ def getUsers():
     return users
 
 
-def genGeo(from_user):
-    geoQueryString = 'https://api.twitter.com/1/users/show.json?screen_name=' + from_user
+def gen_geo(from_user):
+    geo_query_string = 'https://api.twitter.com/1/users/show.json?screen_name=' + from_user
 
-    opsecHeader.queryWebsiteJSON("twitterGeo", geoQueryString)
+    opsecHeader.query_website_json("twitterGeo", geo_query_string)
 
-    results = opsecHeader.readResultsJSON('twitterGeo')
+    results = opsecHeader.read_results_json('twitterGeo')
     location = (results['location']).encode('utf-8')
 
     if not location:
         return 'null', '0.0000000', '0.0000000'
     else:
-        googleQueryString = 'http://maps.googleapis.com/maps/api/geocode/json?&address=' + urllib2.quote(location) + '&sensor=false'
-        opsecHeader.queryWebsiteJSON("googleGeoCode", googleQueryString)
+        google_query_string = 'http://maps.googleapis.com/maps/api/geocode/json?&address=' + urllib2.quote(location) + '&sensor=false'
+        opsecHeader.query_website_json("googleGeoCode", google_query_string)
 
-        googleResults = opsecHeader.readResultsJSON('googleGeoCode')
-        googleAllResults = googleResults['results']
+        google_results = opsecHeader.read_results_json('googleGeoCode')
+        google_all_results = google_results['results']
 
-        if not googleAllResults:
+        if not google_all_results:
             return location, '0.0000000', '0.0000000'
         else:
-            for x in googleAllResults:
-                lat = (x['geometry']['location']['lat'])
-                lng = (x['geometry']['location']['lng'])
+            for i in google_all_results:
+                lat = (i['geometry']['location']['lat'])
+                lng = (i['geometry']['location']['lng'])
                 return location, lat, lng
 
 
-def getUserTweets(user):
+def get_user_tweets(user):
     screen_name = urllib2.quote(user)
-    opsecHeader.writeLastCheckedTime('twitter')
+    opsecHeader.write_last_checked_time('twitter')
 
     # See https://dev.twitter.com/docs/api/1/get/statuses/user_timeline
-    tweetSinceDate = str(getLatestTweet(screen_name, None)[0])
-    epochTimeExisting = getLatestTweet(screen_name, None)[1]
+    tweet_since_date = str(get_latest_tweet(screen_name, None)[0])
+    epoch_time_existing = get_latest_tweet(screen_name, None)[1]
 
-    twitterQueryString = 'https://api.twitter.com/1/statuses/user_timeline.json?screen_name=' + screen_name + '&count=10'
+    twitter_query_string = 'https://api.twitter.com/1/statuses/user_timeline.json?screen_name=' + screen_name + '&count=10'
 
-    if tweetSinceDate != '0': # Twitter does not play nice with invalid since_id's
-        twitterQueryString += '&since_id=' + tweetSinceDate
+    if tweet_since_date != '0':  # Twitter does not play nice with invalid since_id's
+        twitter_query_string += '&since_id=' + tweet_since_date
 
-    opsecHeader.queryWebsiteJSON("twitterUserTweets", twitterQueryString)
+    opsecHeader.query_website_json("twitterUserTweets", twitter_query_string)
 
-    twitterResults = opsecHeader.readResultsJSON('twitterUserTweets')
-    if twitterResults is not None:
-        twitterAllResults = twitterResults
+    twitter_results = opsecHeader.read_results_json('twitterUserTweets')
+    if twitter_results is not None:
+        twitter_all_results = twitter_results
     else:
-        twitterAllResults = None
+        twitter_all_results = None
 
-    if not twitterAllResults:
+    if not twitter_all_results:
         print "No results."
     else:
-        for x in twitterAllResults:
-            created_at = (x['created_at']).encode('utf-8')
-            epochTimeFound = calendar.timegm((email.utils.parsedate(created_at)))
-            if int(epochTimeFound) > int(epochTimeExisting):
-                twitterID = (x['id'])
-                text = (x['text']).encode('utf-8')
-                from_user = (x['user']['screen_name']).encode('utf-8')
-                created_at = (x['created_at']).encode('utf-8')
-                profile_image_url_https = (x['user']['profile_image_url_https']).encode('utf-8')
-                location, lat, lng = genGeo(from_user)
+        for i in twitter_all_results:
+            created_at = (i['created_at']).encode('utf-8')
+            epoch_time_found = calendar.timegm((email.utils.parsedate(created_at)))
+            if int(epoch_time_found) > int(epoch_time_existing):
+                twitter_id = (i['id'])
+                text = (i['text']).encode('utf-8')
+                from_user = (i['user']['screen_name']).encode('utf-8')
+                created_at = (i['created_at']).encode('utf-8')
+                profile_image_url_https = (i['user']['profile_image_url_https']).encode('utf-8')
+                location, lat, lng = gen_geo(from_user)
 
-                writeTweet(twitterID, from_user, text, created_at, '', location, lat, lng, epochTimeFound, profile_image_url_https)
-                keywords = opsecHeader.getUserKeywords(from_user, 'twitter')
+                write_tweet(twitter_id, from_user, text, created_at, '', location, lat, lng, epoch_time_found, profile_image_url_https)
+                keywords = opsecHeader.get_user_keywords(from_user, 'twitter')
                 for keyword in keywords:
                     if keyword in text:
-                        opsecHeader.sendEmail(keyword, "Twitter", from_user)
+                        opsecHeader.send_email(keyword, "Twitter", from_user)
 
 
-def searchTwitter(raw_keyword):
+def search_twitter(raw_keyword):
     keyword = urllib2.quote(raw_keyword)
-    opsecHeader.writeLastCheckedTime('twitter')
+    opsecHeader.write_last_checked_time('twitter')
 
     # See https://dev.twitter.com/docs/api/1/get/search
-    tweetSinceDate = str(getLatestTweet(None, keyword)[0])
-    searchQueryString = 'http://search.twitter.com/search.json?q=' + keyword + '&rpp=10&result_type=recent'
+    tweet_since_date = str(get_latest_tweet(None, keyword)[0])
+    search_query_string = 'http://search.twitter.com/search.json?q=' + keyword + '&rpp=10&result_type=recent'
 
-    if tweetSinceDate != '0': # Twitter does not play nice with invalid since_id's
-        searchQueryString += '&since_id=' + tweetSinceDate
+    if tweet_since_date != '0':  # Twitter does not play nice with invalid since_id's
+        search_query_string += '&since_id=' + tweet_since_date
 
-    opsecHeader.queryWebsiteJSON("twitter", searchQueryString)
+    opsecHeader.query_website_json("twitter", search_query_string)
 
-    twitterResults = opsecHeader.readResultsJSON('twitter')
-    twitterAllResults = twitterResults['results']
+    twitter_results = opsecHeader.read_results_json('twitter')
+    twitter_all_results = twitter_results['results']
 
-    if not twitterAllResults:
+    if not twitter_all_results:
         print "No results."
     else:
-        existingEpochTime = getLatestTweet(None, keyword)[1]
+        existing_epoch_time = get_latest_tweet(None, keyword)[1]
 
-        for x in twitterAllResults:
-            created_at = (x['created_at']).encode('utf-8')
-            epochTimeFound = calendar.timegm((time.strptime(created_at, '%a, %d %b %Y %H:%M:%S +0000')))
-            if int(epochTimeFound) > int(existingEpochTime):
-                twitterID = (x['id'])
-                from_user = (x['from_user']).encode('utf-8')
-                text = (x['text']).encode('utf-8')
-                created_at = (x['created_at']).encode('utf-8')
-                profile_image_url_https = (x['profile_image_url_https']).encode('utf-8')
-                location, lat, lng = genGeo(from_user)
+        for i in twitter_all_results:
+            created_at = (i['created_at']).encode('utf-8')
+            epoch_time_found = calendar.timegm((time.strptime(created_at, '%a, %d %b %Y %H:%M:%S +0000')))
+            if int(epoch_time_found) > int(existing_epoch_time):
+                twitter_id = (i['id'])
+                from_user = (i['from_user']).encode('utf-8')
+                text = (i['text']).encode('utf-8')
+                created_at = (i['created_at']).encode('utf-8')
+                profile_image_url_https = (i['profile_image_url_https']).encode('utf-8')
+                location, lat, lng = gen_geo(from_user)
 
-                writeTweet(twitterID, from_user, text, created_at, keyword, location, lat, lng, epochTimeFound, profile_image_url_https)
-                opsecHeader.sendEmail(keyword, "Twitter")
+                write_tweet(twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time_found, profile_image_url_https)
+                opsecHeader.send_email(keyword, "Twitter")

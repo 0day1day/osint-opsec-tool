@@ -1,17 +1,16 @@
 #!/usr/bin/python
 
-import sys
 import opsecHeader
 import urllib2
 
 
-def writeLatestWordpress(epoch_time, title, author, content, link, keyword):
+def write_latest_wordpress(epoch_time, title, author, content, link, keyword):
     sql = "INSERT INTO wordpress (epoch_time, title, author, content, link, keyword) VALUES (%s, %s, %s, %s, %s, %s)"
     opsecHeader.cur.execute(sql, (epoch_time, title, author, content, link, keyword))
     opsecHeader.db.commit()
 
 
-def getLatestWordpress():
+def get_latest_wordpress():
     result = '0'
     opsecHeader.cur.execute("SELECT epoch_time FROM `wordpress` ORDER BY epoch_time desc LIMIT 1")
     for row in opsecHeader.cur.fetchall():
@@ -19,9 +18,9 @@ def getLatestWordpress():
     return result
 
 
-def searchWordpress(raw_keyword):
+def search_wordpress(raw_keyword):
     keyword = urllib2.quote(raw_keyword)
-    opsecHeader.writeLastCheckedTime('wordpress')
+    opsecHeader.write_last_checked_time('wordpress')
 
     ############### WORDPRESS ##################
     #
@@ -32,23 +31,23 @@ def searchWordpress(raw_keyword):
     # s = sort by; we want date; not relevance
     # f = format; we want JSON
 
-    wordpressQueryString = 'http://en.search.wordpress.com/?q=' + keyword + '&s=date&f=json'
+    wordpress_query_string = 'http://en.search.wordpress.com/?q=' + keyword + '&s=date&f=json'
 
-    opsecHeader.queryWebsiteJSON("wordpress", wordpressQueryString)
+    opsecHeader.query_website_json("wordpress", wordpress_query_string)
 
-    wordpressLatestEpoch = getLatestWordpress()
-    wordpressResults = opsecHeader.readResultsJSON('wordpress')
-    epochTime = wordpressResults[0]['epoch_time']
+    wordpress_latest_epoch = get_latest_wordpress()
+    wordpress_results = opsecHeader.read_results_json('wordpress')
+    epoch_time = wordpress_results[0]['epoch_time']
 
-    if str(wordpressLatestEpoch) == str(epochTime):
+    if str(wordpress_latest_epoch) == str(epoch_time):
         print "No new blog posts since last query."
     else:
-        for x in wordpressResults:
-            epochTime = x['epoch_time']
-            if int(wordpressLatestEpoch) < int(epochTime):
-                title = (x['title']).encode('utf-8')
-                author = (x['author']).encode('utf-8')
-                content = (x['content']).encode('utf-8')
-                link = (x['link']).encode('utf-8')
-                writeLatestWordpress(epochTime, title, author, content, link, keyword)
-                opsecHeader.sendEmail(keyword, "Wordpress")
+        for i in wordpress_results:
+            epoch_time = i['epoch_time']
+            if int(wordpress_latest_epoch) < int(epoch_time):
+                title = (i['title']).encode('utf-8')
+                author = (i['author']).encode('utf-8')
+                content = (i['content']).encode('utf-8')
+                link = (i['link']).encode('utf-8')
+                write_latest_wordpress(epoch_time, title, author, content, link, keyword)
+                opsecHeader.send_email(keyword, "Wordpress")

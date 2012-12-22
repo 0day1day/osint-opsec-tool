@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import datetime
 import gzip
 import json
 import MySQLdb
@@ -40,55 +39,56 @@ cur = db.cursor()
 
 ################ METHODS ##################
 
-def writeLastCheckedTime(source):
+
+def write_last_checked_time(source):
     now = int(time.mktime(time.localtime()))
     sql = "UPDATE last_checked SET last_checked = %s WHERE source = %s"
     cur.execute(sql, (now, source))
     db.commit()
 
 
-def writeTempResults(website, results):
-    workingFile = '/tmp/OPSEC.' + website
-    f = open(workingFile, 'w')
-    f.write(results)
-    f.close()
+def write_temp_results(website, results):
+    working_file = '/tmp/OPSEC.' + website
+    file_handle = open(working_file, 'w')
+    file_handle.write(results)
+    file_handle.close()
 
 
-def readResultsJSON(website):
+def read_results_json(website):
     try:
-        f = open('/tmp/OPSEC.' + website, 'r')
-        return json.load(f)
+        file_handle = open('/tmp/OPSEC.' + website, 'r')
+        return json.load(file_handle)
     except IOError:
         print "Error opening file"
         return None
 
 
-def queryWebsiteJSON(website, query, userAgent='Python-urllib/2.7'):
+def query_website_json(website, query, user_agent='Python-urllib/2.7'):
     print "\nQuerying " + website + "..."
     print query
 
     opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', userAgent)]
+    opener.addheaders = [('User-agent', user_agent)]
 
     try:
-        urlResults = opener.open(query)
+        url_results = opener.open(query)
 
-        if urlResults.info().get('Content-Encoding') == 'gzip':
-            buf = StringIO(urlResults.read())
-            f = gzip.GzipFile(fileobj=buf)
-            results = f.read()
+        if url_results.info().get('Content-Encoding') == 'gzip':
+            buf = StringIO(url_results.read())
+            file_handle = gzip.GzipFile(fileobj=buf)
+            results = file_handle.read()
         else:
-            results = urlResults.read()
+            results = url_results.read()
 
         print results
-        urlResults.close()
+        url_results.close()
 
-        writeTempResults(website, results)
+        write_temp_results(website, results)
     except urllib2.HTTPError:
         print "Error fetching JSON"
 
 
-def sendEmail(keyword, source, user=None):
+def send_email(keyword, source, user=None):
     domain = str(socket.gethostname())
     subject = 'OSINT OPSEC Tool - Keyword Detected'
     body = "'" + keyword + "'" + " has been detected on " + source
@@ -97,13 +97,13 @@ def sendEmail(keyword, source, user=None):
     body += ".\n\n https://" + domain
     msg = ("From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n%s"
         % (sender_email, receiver_email, subject, body))
-    s = smtplib.SMTP('localhost')
-    s.login(sender_email, email_pw)
-    s.sendmail(sender_email, [receiver_email], msg)
-    s.quit()
+    smtp = smtplib.SMTP('localhost')
+    smtp.login(sender_email, email_pw)
+    smtp.sendmail(sender_email, [receiver_email], msg)
+    smtp.quit()
 
 
-def getUserKeywords(user, source):
+def get_user_keywords(user, source):
     keywords = []
     sql = "SELECT keyword FROM keywords WHERE user = %s AND source = %s"
     cur.execute(sql, (user, source))
