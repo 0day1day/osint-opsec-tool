@@ -60,9 +60,9 @@ function getResults($page, $keyword){
         while ($row = $sth->fetch ())
         {
 	    $epoch_time      = htmlspecialchars($row['epoch_time']);
-	    $profile_pic_url = htmlspecialchars($row[profile_picture]);
-            $profile_picture = "<img src=$profile_pic_url/>";
-            $time            = (date('M d h:i:s',$epoch_time));
+	    $profile_pic_url = htmlspecialchars($row['profile_picture']);
+            $profile_picture = "<img src=$profile_pic_url>";
+            $time            = date('M d h:i:s',$epoch_time);
             $user_id         = htmlspecialchars($row['user_id']);
             $name            = htmlspecialchars($row['name']);
             $status          = htmlspecialchars(substr($row['message'], 0, 150));
