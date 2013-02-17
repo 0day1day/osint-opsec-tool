@@ -133,24 +133,26 @@ NOTE: Perform the following steps as user 'opsec', NOT AS ROOT
 
 13) Add your StackExchange API key to backend/config.ini (get a key from http://stackapps.com/apps/oauth/register)
 
-14) Add your Google Maps API key backend/config.ini (get a key from https://developers.google.com/maps/signup)
+14) Add your Google Maps API key to backend/config.ini (get a key from https://developers.google.com/maps/signup)
 
-15) Add a unique User Agent for Reddit to backend/config.ini (e.g. your Reddit username)
+15) Add your Twitter OAuth credentials to backend/config.ini (create an app, and generate OAuth credentials at https://dev.twitter.com/)
 
-16) Add the sender email address (and pw) and receiver email address to backend/config.ini
+16) Add a unique User Agent for Reddit to backend/config.ini (e.g. your Reddit username)
 
-17) Set up the cron daemon with the bootstrap file (via crontab -e):
+17) Add the sender email address (and pw) and receiver email address to backend/config.ini
+
+18) Set up the cron daemon with the bootstrap file (via crontab -e):
 
     * * * * * /var/www/osint-opsec-tool/backend/bootstrap.py
 
-18) Start the pastebin scraper
+19) Start the pastebin scraper
     $ screen
     $ python osint-opsec-tool/backend/pastebin.py 
 
-19) Browse to http(s)://<yourhost>/ 
+20) Browse to http(s)://<yourhost>/ 
    Default login: opsec:opsec
 
-20) Please change the password for the default 'opsec' account once you have logged in.
+21) Please change the password for the default 'opsec' account once you have logged in.
 
 
 -----------------------------------------------------------------------------------------------
