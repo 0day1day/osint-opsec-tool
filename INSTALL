@@ -17,6 +17,7 @@ getpass
 gzip
 json
 MySQLdb (apt-get install python-mysqldb)
+oauth2 (apt-get install python-oauth2)
 os
 random
 re
