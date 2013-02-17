@@ -4,6 +4,7 @@ import gzip
 import json
 import MySQLdb
 import os
+import oauth2 as oauth
 import smtplib
 import socket
 import sys
@@ -26,6 +27,11 @@ sender_email = parser.get('email', 'sender_email').replace("'", "")
 email_pw = parser.get('email', 'email_pw').replace("'", "")
 reddit_api_key = parser.get('reddit', 'reddit_api_key').replace("'", "")
 stackexchange_api_key = parser.get('stackexchange', 'stackexchange_api_key').replace("'", "")
+
+twitter_consumer_key = parser.get('twitter', 'twitter_consumer_key').replace("'", "")
+twitter_consumer_secret = parser.get('twitter', 'twitter_consumer_secret').replace("'", "")
+twitter_access_token = parser.get('twitter', 'twitter_access_token').replace("'", "")
+twitter_access_token_secret = parser.get('twitter', 'twitter_access_token_secret').replace("'", "")
 
 ############# CONNECT TO DB ###############
 
@@ -61,6 +67,23 @@ def read_results_json(website):
     except IOError:
         print "Error opening file"
         return None
+
+
+def query_website_oauth_json(website, query, consumer_key, consumer_secret, access_token, access_token_secret):
+    print("\nQuerying " + website + "...")
+    print(query)
+
+    consumer = oauth.Consumer(consumer_key, consumer_secret)
+    token = oauth.Token(access_token, access_token_secret)
+    client = oauth.Client(consumer, token)
+
+    try:
+        response, results = client.request(query)
+        print(response)
+        print(results)
+        write_temp_results(website, results)
+    except Exception as e:
+        print("Exception occured.")
 
 
 def query_website_json(website, query, user_agent='Python-urllib/2.7'):

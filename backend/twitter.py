@@ -43,9 +43,9 @@ def get_users():
 
 
 def gen_geo(from_user):
-    geo_query_string = 'https://api.twitter.com/1/users/show.json?screen_name=' + from_user
+    geo_query_string = 'https://api.twitter.com/1.1/users/show.json?screen_name=' + from_user
 
-    opsecHeader.query_website_json("twitterGeo", geo_query_string)
+    opsecHeader.query_website_oauth_json("twitterGeo", geo_query_string, opsecHeader.twitter_consumer_key, opsecHeader.twitter_consumer_secret, opsecHeader.twitter_access_token, opsecHeader.twitter_access_token_secret)
 
     results = opsecHeader.read_results_json('twitterGeo')
     location = (results['location']).encode('utf-8')
@@ -76,12 +76,12 @@ def get_user_tweets(user):
     tweet_since_date = str(get_latest_tweet(screen_name, None)[0])
     epoch_time_existing = get_latest_tweet(screen_name, None)[1]
 
-    twitter_query_string = 'https://api.twitter.com/1/statuses/user_timeline.json?screen_name=' + screen_name + '&count=10'
+    twitter_query_string = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=' + screen_name + '&count=10'
 
     if tweet_since_date != '0':  # Twitter does not play nice with invalid since_id's
         twitter_query_string += '&since_id=' + tweet_since_date
 
-    opsecHeader.query_website_json("twitterUserTweets", twitter_query_string)
+    opsecHeader.query_website_oauth_json("twitterUserTweets", twitter_query_string, opsecHeader.twitter_consumer_key, opsecHeader.twitter_consumer_secret, opsecHeader.twitter_access_token, opsecHeader.twitter_access_token_secret)
 
     twitter_results = opsecHeader.read_results_json('twitterUserTweets')
     if twitter_results is not None:
