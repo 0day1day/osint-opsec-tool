@@ -5,7 +5,7 @@ OSINT OPSEC TOOL
 VERSION
 =======
 
-v1.0
+v1.0.3
 
 
 LICENCE
@@ -43,7 +43,7 @@ alerts, and maps trends of the data, finding all sorts of info people
 probably don't want others to see... 
 
 Current monitered sites (Source | Native/Custom API | Authentication? | API Limits):
--  Twitter       |  native API  |  noauth w/ 1.0; need auth for 1.1   |    150 req/hour
+-  Twitter       |  native API  |  auth through OAuth                 |    150 req/hour
 -  Reddit        |  native API  |  auth through a unique User-Agent   |   1800 req/hour
 -  Wordpress     |  native API  |  noauth                             |       ?
 -  Facebook      |  native API  |  noauth yet; may be needed for user | 70,000 req/hour
