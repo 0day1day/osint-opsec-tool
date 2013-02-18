@@ -114,17 +114,17 @@ def search_twitter(raw_keyword):
     keyword = urllib2.quote(raw_keyword)
     opsecHeader.write_last_checked_time('twitter')
 
-    # See https://dev.twitter.com/docs/api/1/get/search
+    # See https://dev.twitter.com/docs/api/1.1/get/search/tweets 
     tweet_since_date = str(get_latest_tweet(None, keyword)[0])
-    search_query_string = 'http://search.twitter.com/search.json?q=' + keyword + '&rpp=10&result_type=recent'
+    search_query_string = 'https://api.twitter.com/1.1/search/tweets.json?q=' + keyword + '&count=10&result_type=recent'
 
     if tweet_since_date != '0':  # Twitter does not play nice with invalid since_id's
         search_query_string += '&since_id=' + tweet_since_date
 
-    opsecHeader.query_website_json("twitter", search_query_string)
+    opsecHeader.query_website_oauth_json("twitter", search_query_string, opsecHeader.twitter_consumer_key, opsecHeader.twitter_consumer_secret, opsecHeader.twitter_access_token, opsecHeader.twitter_access_token_secret)
 
     twitter_results = opsecHeader.read_results_json('twitter')
-    twitter_all_results = twitter_results['results']
+    twitter_all_results = twitter_results['statuses']
 
     if not twitter_all_results:
         print "No results."
@@ -133,13 +133,13 @@ def search_twitter(raw_keyword):
 
         for i in twitter_all_results:
             created_at = (i['created_at']).encode('utf-8')
-            epoch_time_found = calendar.timegm((time.strptime(created_at, '%a, %d %b %Y %H:%M:%S +0000')))
+            epoch_time_found = calendar.timegm((time.strptime(created_at, '%a %b %d %H:%M:%S +0000 %Y')))
             if int(epoch_time_found) > int(existing_epoch_time):
                 twitter_id = (i['id'])
-                from_user = (i['from_user']).encode('utf-8')
+                from_user = (i['user']['screen_name']).encode('utf-8')
                 text = (i['text']).encode('utf-8')
                 created_at = (i['created_at']).encode('utf-8')
-                profile_image_url_https = (i['profile_image_url_https']).encode('utf-8')
+                profile_image_url_https = (i['user']['profile_image_url_https']).encode('utf-8')
                 location, lat, lng = gen_geo(from_user)
 
                 write_tweet(twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time_found, profile_image_url_https)
