@@ -13,6 +13,12 @@ import urllib2
 from ConfigParser import SafeConfigParser
 from StringIO import StringIO
 
+class Color:
+    HEADER = '\033[95m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    ENDC = '\033[0m'
+
 ############## READ CONFIG ################
 if __name__ == '__main__':
     path = os.path.split(sys.argv[0])[0]

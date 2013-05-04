@@ -2,74 +2,81 @@
 
 import datetime
 
-import opsecHeader
-import twitter
-import reddit
-import stackexchange
-import facebook
-import wordpress
 
+import opsecHeader
+from opsecHeader import Color
+from sources import Twitter, Reddit, StackExchange, Facebook, Wordpress
+
+version = '1.0.4'
 
 def main():
-    minute = datetime.datetime.now().minute
-    five_min_interval = (int(minute) / 5) - 1
-    one_digit_minute = int(str(minute)[-1])
+    current_minute = datetime.datetime.now().minute
+    five_min_interval = (int(current_minute) / 5) - 1
+    one_digit_minute = int(str(current_minute)[-1])
 
-    print("################################")
-    print("#### OPSEC Search Bootstrap ####")
-    print("################################")
+    print(Color.YELLOW + "####################################################################################")
+    print('''   ___  __   _____    __  _____     ___  ___  __    __  ___   _____  ___  ___  __  
+  /___\/ _\  \_   \/\ \ \/__   \   /___\/ _ \/ _\  /__\/ __\ /__   \/___\/___\/ /  
+ //  //\ \    / /\/  \/ /  / /\/  //  // /_)/\ \  /_\ / /      / /\//  ///  // /   
+/ \_// _\ \/\/ /_/ /\  /  / /    / \_// ___/ _\ \//__/ /___   / / / \_// \_// /___ 
+\___/  \__/\____/\_\ \/   \/     \___/\/     \__/\__/\____/   \/  \___/\___/\____/ 
+                                                                                   ''')
+    print("                     OSINT OPSEC Tool " + version + " - By @hyprwired")
+    print("####################################################################################" + Color.ENDC)
 
-    print("----- User Specific Search -----")
-    print("Attempting site/user specific search")
+    print(Color.HEADER + "[*] User Specific Search" + Color.ENDC)
+    print("[-] Attempting site/user specific search...")
+    print("[-] Trying user #" + str(one_digit_minute) + "...")
 
     # Twitter
-    try:
-        user = twitter.get_users()[one_digit_minute]
+    twitter = Twitter()
+    user = twitter.get_user(one_digit_minute)
+    if user is not None:    
         twitter.get_user_tweets(user)
-    except IndexError:
-        print("No Twitter user found at index " + str(one_digit_minute))
+    else:
+        print("[-] No Twitter user #" + str(one_digit_minute))
 
     # Reddit
-    try:
-        author = reddit.get_users()[one_digit_minute]
+    reddit = Reddit()
+    author = reddit.get_user(one_digit_minute)
+    if author is not None:
         reddit.get_user_comments(author)
-    except IndexError:
-        print("No Reddit user found at index " + str(one_digit_minute))
+    else:
+        print("[-] No Reddit user #" + str(one_digit_minute))
 
     # StackExchange
-    try:
-        account_id = stackexchange.get_users()[one_digit_minute]
-        stackexchange.get_user_posts(account_id)
-    except IndexError:
-        print("No StackExchange user found at index " + str(one_digit_minute))
-
-
-    print("-------- General search --------")
-    if (minute % 5) == 0:
-        print("Attempting general site search...")
-        try:
-            keyword = opsecHeader.get_user_keywords('all',
-                                                'twitter')[five_min_interval]
-            twitter.search_twitter(keyword)
-        except IndexError:
-            print("No twitter keyword at index " + str(five_min_interval))
-
-        try:
-            keyword = opsecHeader.get_user_keywords('all',
-                                                'facebook')[five_min_interval]
-            facebook.search_facebook(keyword)
-        except IndexError:
-            print("No facebook keyword at index " + str(five_min_interval))
-
-        try:
-            keyword = opsecHeader.get_user_keywords('all',
-                                                'wordpress')[five_min_interval]
-            wordpress.search_wordpress(keyword)
-        except IndexError:
-            print("No wordpress keyword at index " + str(five_min_interval))
-
+    stack_exchange = StackExchange()
+    account_id = stack_exchange.get_user(one_digit_minute)
+    if account_id is not None:    
+        stack_exchange.get_user_posts(account_id)
     else:
-        print("Minute not a multiple of 5, not attempting general site search...")
+        print("[-] No StackExchange user #" + str(one_digit_minute))
+
+
+    print(Color.HEADER + "[*] General Search" + Color.ENDC)
+    if (current_minute % 5) == 0:
+        print("[-] Attempting general site search...")
+        try:
+            twitter_keyword = opsecHeader.get_user_keywords('all','twitter')[five_min_interval]
+            twitter.search_twitter(twitter_keyword)
+        except IndexError:
+            print("[-] No twitter keyword at index #: " + str(five_min_interval))
+       
+        try:
+            facebook_keyword = opsecHeader.get_user_keywords('all','facebook')[five_min_interval]
+            facebook = Facebook()
+            facebook.search_facebook(facebook_keyword)
+        except IndexError:
+            print("[-] No Facebook keyword at index #: " + str(five_min_interval))
+
+        try:
+            wordpress_keyword = opsecHeader.get_user_keywords('all','wordpress')[five_min_interval]
+            wordpress = Wordpress()
+            wordpress.search_wordpress(wordpress_keyword)
+        except IndexError:
+            print("[-] No Wordpress keyword at index #: " + str(five_min_interval))
+    else:
+        print("[-] Minute not a multiple of 5, not attempting general site search to avoid throttling...")
 
 if __name__ == "__main__":
     main()

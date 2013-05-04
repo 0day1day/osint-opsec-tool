@@ -1,3 +1,9 @@
+1.0.4 (04.05.12)  Refactored backend python code:
+                  - Each source is now treated as a class instead of a library
+                  - Merged facebook.py, reddit.py, stackexchange.py, twitter.py and wordpress.py into sources.py 
+                  Improved Twitter Geolocation; takes tweet location instead of profile location if available
+                  Added colour to log files for easier readability
+ 
 1.0.3 (18.02.13)  Updated Twitter library to support API v1.1
                   Updated opsecHeader library to support OAuth JSON API requests; new method query_website_oauth_json()
 
