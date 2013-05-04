@@ -5,7 +5,7 @@ OSINT OPSEC TOOL
 VERSION
 =======
 
-v1.0.3
+v1.0.4
 
 
 LICENCE
@@ -29,9 +29,6 @@ ACKNOWLEDGEMENTS
 - Adrian Hayes for feedback on the 'con talk
 - All of the kiwicon crue, sponsors and attendees where the tool was first 
 demonstrated and released
-
-eye.png logo source: https://commons.wikimedia.org/wiki/File:Black_Caodaist_symbol.PNG
-"This work has been released into the public domain by its author, Nyo. This applies worldwide."
 
 
 ABOUT
