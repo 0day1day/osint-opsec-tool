@@ -142,6 +142,9 @@ class Reddit:
 
 class StackExchange:
 
+    def __init__(self):
+       self.api_key = opsecHeader.stackexchange_api_key
+
     def write_latest_post(self, account_id, user_id, site, content_type, epoch_time, profile_image, url, content, display_name):
         sql = "INSERT INTO stackexchange (account_id, user_id, site, content_type, epoch_time, profile_image, url, content, display_name) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         opsecHeader.cur.execute(sql, (account_id, user_id, site, content_type, epoch_time, profile_image, url, content, display_name))
@@ -172,7 +175,7 @@ class StackExchange:
     
     def get_user_accounts(self, stackexchange_account):
         print("Getting StackExchange user accounts...")
-        associated_query_string = 'http://api.stackexchange.com/2.1/users/' + str(stackexchange_account) + '/associated?key=' + opsecHeader.stackexchange_api_key
+        associated_query_string = 'http://api.stackexchange.com/2.1/users/' + str(stackexchange_account) + '/associated?key=' + self.api_key
         opsecHeader.query_website_json("StackExchangeUserAccounts", associated_query_string)
     
         results = opsecHeader.read_results_json('StackExchangeUserAccounts')
@@ -210,7 +213,7 @@ class StackExchange:
     
     def get_post(self, account_id, site, user_id, content_type):
         latest_epoch_time = self.get_latest_post(user_id, site, content_type)
-        query_string = 'http://api.stackexchange.com/2.1/users/' + str(user_id) + '/' + str(content_type) + 's?fromdate=' + str(latest_epoch_time) + '&order=desc&sort=creation&site=' + site + '&key=' + opsecHeader.stackexchange_api_key
+        query_string = 'http://api.stackexchange.com/2.1/users/' + str(user_id) + '/' + str(content_type) + 's?fromdate=' + str(latest_epoch_time) + '&order=desc&sort=creation&site=' + site + '&key=' + self.api_key
         opsecHeader.query_website_json(str(site) + str(user_id) + str(content_type), query_string)
         opsecHeader.write_last_checked_time('stackexchange')
     
@@ -294,6 +297,12 @@ class StackExchange:
 
 class Twitter:
 
+    def __init__(self):
+        self.consumer_key = opsecHeader.twitter_consumer_key
+        self.consumer_secret = opsecHeader.twitter_consumer_secret
+        self.access_token = opsecHeader.twitter_access_token
+        self.access_token_secret = opsecHeader.twitter_access_token_secret 
+
     def write_tweet(self, twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time, profile_image_url_https):
         sql = "INSERT INTO twitter (twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time, profile_image_url_https) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         opsecHeader.cur.execute(sql, (twitter_id, from_user, text, created_at, keyword, location, lat, lng, epoch_time, profile_image_url_https))
@@ -326,7 +335,7 @@ class Twitter:
     
     def gen_geo(self, from_user):
         geo_query_string = 'https://api.twitter.com/1.1/users/show.json?screen_name=' + from_user
-        opsecHeader.query_website_oauth_json("twitterGeo", geo_query_string, opsecHeader.twitter_consumer_key, opsecHeader.twitter_consumer_secret, opsecHeader.twitter_access_token, opsecHeader.twitter_access_token_secret)
+        opsecHeader.query_website_oauth_json("twitterGeo", geo_query_string, self.consumer_key, self.consumer_secret, self.access_token, self.access_token_secret)
         results = opsecHeader.read_results_json('twitterGeo')
         location = (results['location']).encode('utf-8')
         if not location:
@@ -357,7 +366,7 @@ class Twitter:
         if tweet_since_date != '0':  # Twitter does not play nice with invalid since_id's
             twitter_query_string += '&since_id=' + tweet_since_date
     
-        opsecHeader.query_website_oauth_json("twitterUserTweets", twitter_query_string, opsecHeader.twitter_consumer_key, opsecHeader.twitter_consumer_secret, opsecHeader.twitter_access_token, opsecHeader.twitter_access_token_secret)
+        opsecHeader.query_website_oauth_json("twitterUserTweets", twitter_query_string, self.consumer_key, self.consumer_secret, self.access_token, self.access_token_secret)
     
         twitter_results = opsecHeader.read_results_json('twitterUserTweets')
         if twitter_results is not None:
@@ -404,7 +413,7 @@ class Twitter:
         if tweet_since_date != '0':  # Twitter does not play nice with invalid since_id's
             search_query_string += '&since_id=' + tweet_since_date
     
-        opsecHeader.query_website_oauth_json("twitter", search_query_string, opsecHeader.twitter_consumer_key, opsecHeader.twitter_consumer_secret, opsecHeader.twitter_access_token, opsecHeader.twitter_access_token_secret)
+        opsecHeader.query_website_oauth_json("twitter", search_query_string, self.consumer_key, self.consumer_secret, self.access_token, self.access_token_secret)
     
         twitter_results = opsecHeader.read_results_json('twitter')
         twitter_all_results = twitter_results['statuses']

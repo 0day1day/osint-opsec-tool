@@ -13,6 +13,8 @@ import urllib2
 from ConfigParser import SafeConfigParser
 from StringIO import StringIO
 
+version = '1.0.5'
+
 class Color:
     HEADER = '\033[95m'
     GREEN = '\033[92m'

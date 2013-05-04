@@ -7,7 +7,6 @@ import opsecHeader
 from opsecHeader import Color
 from sources import Twitter, Reddit, StackExchange, Facebook, Wordpress
 
-version = '1.0.4'
 
 def main():
     current_minute = datetime.datetime.now().minute
@@ -21,7 +20,7 @@ def main():
 / \_// _\ \/\/ /_/ /\  /  / /    / \_// ___/ _\ \//__/ /___   / / / \_// \_// /___ 
 \___/  \__/\____/\_\ \/   \/     \___/\/     \__/\__/\____/   \/  \___/\___/\____/ 
                                                                                    ''')
-    print("                     OSINT OPSEC Tool " + version + " - By @hyprwired")
+    print("                     OSINT OPSEC Tool " + opsecHeader.version + " - By @hyprwired")
     print("####################################################################################" + Color.ENDC)
 
     print(Color.HEADER + "[*] User Specific Search" + Color.ENDC)

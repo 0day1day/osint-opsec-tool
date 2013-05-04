@@ -1,3 +1,6 @@
+1.0.5 (04.05.12)  Updated sources.py Twitter and StackExchange classes to use self rather than referring to opsecHeader
+                  for API keys
+
 1.0.4 (04.05.12)  Refactored backend python code:
                   - Each source is now treated as a class instead of a library
                   - Merged facebook.py, reddit.py, stackexchange.py, twitter.py and wordpress.py into sources.py 
