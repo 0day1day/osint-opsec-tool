@@ -4,6 +4,7 @@ import MySQLdb
 import os
 from ConfigParser import SafeConfigParser
 
+
 def main():
     os.system('clear')
 

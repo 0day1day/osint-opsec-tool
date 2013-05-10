@@ -15,6 +15,7 @@ from StringIO import StringIO
 
 version = '1.0.5'
 
+
 class Color:
     HEADER = '\033[95m'
     GREEN = '\033[92m'
@@ -91,7 +92,7 @@ def query_website_oauth_json(website, query, consumer_key, consumer_secret, acce
         print(results)
         write_temp_results(website, results)
     except Exception as e:
-        print("Exception occured.")
+        print(e)
 
 
 def query_website_json(website, query, user_agent='Python-urllib/2.7'):

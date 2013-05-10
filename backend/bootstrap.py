@@ -14,11 +14,11 @@ def main():
     one_digit_minute = int(str(current_minute)[-1])
 
     print(Color.YELLOW + "####################################################################################")
-    print('''   ___  __   _____    __  _____     ___  ___  __    __  ___   _____  ___  ___  __  
-  /___\/ _\  \_   \/\ \ \/__   \   /___\/ _ \/ _\  /__\/ __\ /__   \/___\/___\/ /  
- //  //\ \    / /\/  \/ /  / /\/  //  // /_)/\ \  /_\ / /      / /\//  ///  // /   
-/ \_// _\ \/\/ /_/ /\  /  / /    / \_// ___/ _\ \//__/ /___   / / / \_// \_// /___ 
-\___/  \__/\____/\_\ \/   \/     \___/\/     \__/\__/\____/   \/  \___/\___/\____/ 
+    print('''   ___  __   _____    __  _____     ___  ___  __    __  ___   _____  ___  ___  __
+  /___\/ _\  \_   \/\ \ \/__   \   /___\/ _ \/ _\  /__\/ __\ /__   \/___\/___\/ /
+ //  //\ \    / /\/  \/ /  / /\/  //  // /_)/\ \  /_\ / /      / /\//  ///  // /
+/ \_// _\ \/\/ /_/ /\  /  / /    / \_// ___/ _\ \//__/ /___   / / / \_// \_// /
+\___/  \__/\____/\_\ \/   \/     \___/\/     \__/\__/\____/   \/  \___/\___/\____/
                                                                                    ''')
     print("                     OSINT OPSEC Tool " + opsecHeader.version + " - By @hyprwired")
     print("####################################################################################" + Color.ENDC)
@@ -30,7 +30,7 @@ def main():
     # Twitter
     twitter = Twitter()
     user = twitter.get_user(one_digit_minute)
-    if user is not None:    
+    if user is not None:
         twitter.get_user_tweets(user)
     else:
         print("[-] No Twitter user #" + str(one_digit_minute))
@@ -46,30 +46,29 @@ def main():
     # StackExchange
     stack_exchange = StackExchange()
     account_id = stack_exchange.get_user(one_digit_minute)
-    if account_id is not None:    
+    if account_id is not None:
         stack_exchange.get_user_posts(account_id)
     else:
         print("[-] No StackExchange user #" + str(one_digit_minute))
-
 
     print(Color.HEADER + "[*] General Search" + Color.ENDC)
     if (current_minute % 5) == 0:
         print("[-] Attempting general site search...")
         try:
-            twitter_keyword = opsecHeader.get_user_keywords('all','twitter')[five_min_interval]
+            twitter_keyword = opsecHeader.get_user_keywords('all', 'twitter')[five_min_interval]
             twitter.search_twitter(twitter_keyword)
         except IndexError:
             print("[-] No twitter keyword at index #: " + str(five_min_interval))
-       
+
         try:
-            facebook_keyword = opsecHeader.get_user_keywords('all','facebook')[five_min_interval]
+            facebook_keyword = opsecHeader.get_user_keywords('all', 'facebook')[five_min_interval]
             facebook = Facebook()
             facebook.search_facebook(facebook_keyword)
         except IndexError:
             print("[-] No Facebook keyword at index #: " + str(five_min_interval))
 
         try:
-            wordpress_keyword = opsecHeader.get_user_keywords('all','wordpress')[five_min_interval]
+            wordpress_keyword = opsecHeader.get_user_keywords('all', 'wordpress')[five_min_interval]
             wordpress = Wordpress()
             wordpress.search_wordpress(wordpress_keyword)
         except IndexError:
